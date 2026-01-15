@@ -87,10 +87,10 @@ public class Application {
         ordersByCustomer.forEach((customer, ordersList) -> System.out.println("Customer: " + customer + ", Orders: " + ordersList));
 
         //ES2
-        Map<String, Double> totAmountByCustomer = allOrders.stream()
+        Map<String, DoubleSummaryStatistics> totAmountByCustomer = allOrders.stream()
                 .collect(Collectors.groupingBy(order -> order.getCustomer().getName(),
                         Collectors.summarizingDouble(order -> order.getProducts().stream()
-                                .mapToDouble(product -> product.getPrice()).sum())));
+                                .mapToDouble(Product::getPrice).sum())));
 
         //ES3
         List<Product> moreExpensiveProducts = allProducts.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).limit(3).toList();
@@ -107,7 +107,11 @@ public class Application {
         else System.out.println("Nessuna media, la lista è vuota!");
 
         //ES5
-        
+        Map<String, DoubleSummaryStatistics> totAmountByCategory = allProducts.stream()
+                .collect(Collectors.groupingBy(product -> product.getCategory(),
+                        Collectors.summarizingDouble(product -> product.getPrice()
+                        )));
+
 
     }
 }
