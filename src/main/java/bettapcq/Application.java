@@ -90,7 +90,7 @@ public class Application {
         Map<String, DoubleSummaryStatistics> totAmountByCustomer = allOrders.stream()
                 .collect(Collectors.groupingBy(order -> order.getCustomer().getName(),
                         Collectors.summarizingDouble(order -> order.getProducts().stream()
-                                .mapToDouble(Product::getPrice).sum())));
+                                .mapToDouble(Product::getPrice).reduce(0, (partialSum, currElem) -> partialSum + currElem))));
 
         //ES3
         List<Product> moreExpensiveProducts = allProducts.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).limit(3).toList();
