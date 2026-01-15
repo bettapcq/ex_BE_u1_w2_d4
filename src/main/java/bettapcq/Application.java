@@ -82,15 +82,23 @@ public class Application {
         Collections.addAll(allOrders, order1, order2, order3, order4, order5);
 
         //ES1
-        Map<String, List<Order>> ordersByCustomer = allOrders.stream()
-                .collect(Collectors.groupingBy(order -> order.getCustomer().getName()));
+        //Correzione:
+        // - la consegna chiedeva come chiave il cliente, non il nome cliente!
+        Map<Customer, List<Order>> ordersByCustomer = allOrders.stream()
+                .collect(Collectors.groupingBy(order -> order.getCustomer()));
         ordersByCustomer.forEach((customer, ordersList) -> System.out.println("Customer: " + customer + ", Orders: " + ordersList));
 
+
         //ES2
-        Map<String, DoubleSummaryStatistics> totAmountByCustomer = allOrders.stream()
-                .collect(Collectors.groupingBy(order -> order.getCustomer().getName(),
-                        Collectors.summarizingDouble(order -> order.getProducts().stream()
+        //Correzione:
+        // - anche qui la consegna chiedeva come chiave il cliente
+        // - non il nome cliente, meglio usare summingDouble e non summarizingDouble
+        // - utilizzare .sum() anzichè .reduce(), è piu' semplificato
+        Map<Customer, Double> totAmountByCustomer = allOrders.stream()
+                .collect(Collectors.groupingBy(order -> order.getCustomer(),
+                        Collectors.summingDouble(order -> order.getProducts().stream()
                                 .mapToDouble(Product::getPrice).reduce(0, (partialSum, currElem) -> partialSum + currElem))));
+        System.out.println("L'importo tot per customer è: " + totAmountByCustomer);
 
         //ES3
         List<Product> moreExpensiveProducts = allProducts.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).limit(3).toList();
@@ -107,10 +115,13 @@ public class Application {
         else System.out.println("Nessuna media, la lista è vuota!");
 
         //ES5
-        Map<String, DoubleSummaryStatistics> totAmountByCategory = allProducts.stream()
+        //Correzione:
+        // - anche qui, meglio utilizzare Double e non DoubleSummaryStatistics
+        Map<String, Double> totAmountByCategory = allProducts.stream()
                 .collect(Collectors.groupingBy(product -> product.getCategory(),
-                        Collectors.summarizingDouble(product -> product.getPrice()
+                        Collectors.summingDouble(product -> product.getPrice()
                         )));
+        System.out.println("Il totale degli importi per categoria è: " + totAmountByCategory);
 
 
     }
