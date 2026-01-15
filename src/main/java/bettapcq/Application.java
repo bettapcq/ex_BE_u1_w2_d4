@@ -87,10 +87,10 @@ public class Application {
         ordersByCustomer.forEach((customer, ordersList) -> System.out.println("Customer: " + customer + ", Orders: " + ordersList));
 
         //ES2
-//        Map<String, Double> totAmountByCustomer = allOrders.stream()
-//                .collect(Collectors.groupingBy(order -> order.getCustomer().getName(),
-//                        Collectors.summarizingDouble(order -> order.getProducts().stream()
-//                                .mapToDouble(product -> product.getPrice()))));
+        Map<String, Double> totAmountByCustomer = allOrders.stream()
+                .collect(Collectors.groupingBy(order -> order.getCustomer().getName(),
+                        Collectors.summarizingDouble(order -> order.getProducts().stream()
+                                .mapToDouble(product -> product.getPrice()).sum())));
 
         //ES3
         List<Product> moreExpensiveProducts = allProducts.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).limit(3).toList();
@@ -98,6 +98,15 @@ public class Application {
         moreExpensiveProducts.forEach(product -> System.out.println("- " + product.getName() + " e costa " + product.getPrice()));
 
         //ES4
+        OptionalDouble ordersAmountAverage = allOrders.stream()
+                .mapToDouble(order -> order.getProducts().stream()
+                        .mapToDouble(Product::getPrice)
+                        .sum())
+                .average();
+        if (ordersAmountAverage.isPresent()) System.out.println("La media è: " + ordersAmountAverage.getAsDouble());
+        else System.out.println("Nessuna media, la lista è vuota!");
+
+        //ES5
         
 
     }
